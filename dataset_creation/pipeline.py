@@ -19,4 +19,13 @@ TOTAL_TASKS = 16
 # you can also change ngrams or the number of buckets and their size here 
 minhash_config = MinhashConfig(
     use_64bit_hashes=True, 
-) # better precision -> fewer false positives (collisions)
+) # better precision -> fewer false positives (collisions) 
+
+
+def run_code_dataset_generation():
+    # stage 0 reads the code data and does basic filtering 
+    pipeline_0 = [
+        PersonalCopilotDatasetReader(data_folder=MIRROR_DIRECTORY),
+        BasicodeFilter(),
+        JsonlWriter(output_folder="filtered_data"), 
+    ]
