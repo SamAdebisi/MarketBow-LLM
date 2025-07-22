@@ -27,3 +27,14 @@ class BasicCodeFilter(BaseFilter):
         self.max_line_length_threshold = max_line_length_threshold 
         self.mean_line_length_threshold = mean_line_length_threshold 
         self.alphanum_threshold = alphanum_threshold 
+        
+    def filter(self, doc: Document) -> bool | tuple[bool, str]:
+        """Applies heuristic rules to decide if a document should be REMOVED 
+        Args: 
+            doc 
+            
+        Returns: 
+            False if sample.text has lines longer than max line length threshold or 
+            mean line length threshold or the fraction of alphanumeric character is less than the given threshold 
+        
+        """
