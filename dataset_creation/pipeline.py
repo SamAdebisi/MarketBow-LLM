@@ -38,3 +38,12 @@ def run_code_dataset_generation():
             config=minhash_config, 
         ), 
     ]
+    
+    # stage 2 finds matches between signatures in each bucket 
+    pipeline_2 = [
+        MinhashDedupBuckets(
+            input_folder="signatures", 
+            output_folder="buckets",
+            config=minhash_config, 
+        )
+    ]
