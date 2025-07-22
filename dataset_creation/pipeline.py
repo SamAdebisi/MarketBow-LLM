@@ -56,3 +56,47 @@ def run_code_dataset_generation():
             config=minhash_config, 
         )
     ]
+    
+    # stage 4 reads the original input data and removes all but 1 sample per duplicate cluster 
+    # the data must match exactly stage 1, so number of tasks and the input source must be the same 
+    pipeline_4 = [
+        JsonlReader("filtered_data"), 
+        TokensCounter(),  # nice way to see how many tokens we had before and after deduplication 
+        MinhashDedupFilter(
+            input_folder="remove_ids",
+            exclusion_writer=JsonlWriter("removed"),
+        ),
+        JsonlWriter(output_folder="hf_stack"),
+    ]
+    
+    executor_0: PipelineExecutor = LocalPipelineExecutor(
+        pipeline=pipeline_0, tasks=TOTAL_TASKS 
+    )
+    
+    executor_1: PipelineExecutor = LocalPipelineExecutor(
+        pipeline=pipeline_1, tasks= TOTAL_TASKS 
+    )
+    
+    executor_2: PipelineExecutor = LocalPipelineExecutor(
+        pipeline=pipeline_2,
+        tasks=minhash_config.num_buckets, 
+    )
+    
+    executor_3: PipelineExecutor= LocalPipelineExecutor(
+        pipeline=pipeline_3,
+        tasks=1
+    )
+    
+    executor_4: PipelineExecutor = LocalPipelineExecutor(
+        pipeline=pipeline_4, tasks=TOTAL_TASKS
+    )
+    
+    print(executor_0.run())
+    print(executor_1.run())
+    print(executor_2.run())
+    print(executor_3.run())
+    print(executor_4.run())
+    
+    
+if __name__=="__main__":
+    run_code_dataset_generation()
