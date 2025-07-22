@@ -47,3 +47,12 @@ def run_code_dataset_generation():
             config=minhash_config, 
         )
     ]
+    
+    # stage 3 creates clusters of duplicates using the results from all buckets 
+    pipeline_3 = [
+        MinhashDedupCluster(
+            input_folder="buckets",
+            output_folder="remove_ids",
+            config=minhash_config, 
+        )
+    ]
