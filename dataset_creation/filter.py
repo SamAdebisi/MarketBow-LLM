@@ -10,3 +10,13 @@ def get_basic_stats(text):
     alphanum_count = sum(char.isalpha() or char.isdigit() for char in text)
     alphanum_ratio = alphanum_count / len(text)
     return max_line_length, mean_line_length, alphanum_ratio 
+
+
+class BasicCodeFilter(BaseFilter):
+    name = "🧑🏽‍💻 Code Filter"
+    
+    def __init__(
+        self, 
+        
+    ):
+        pass 
