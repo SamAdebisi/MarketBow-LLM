@@ -17,6 +17,13 @@ class BasicCodeFilter(BaseFilter):
     
     def __init__(
         self, 
-        
-    ):
-        pass 
+        max_line_length_threshold: int | None = 1000, 
+        mean_line_length_threshold: int | None = 100, 
+        alphanum_threshold: float | None = 0.25, 
+        exclusion_writer: DiskWriter = None, 
+    ):  # TODO better tune 
+        """ """ 
+        super().__init__(exclusion_writer)
+        self.max_line_length_threshold = max_line_length_threshold 
+        self.mean_line_length_threshold = mean_line_length_threshold 
+        self.alphanum_threshold = alphanum_threshold 
