@@ -29,3 +29,12 @@ def run_code_dataset_generation():
         BasicodeFilter(),
         JsonlWriter(output_folder="filtered_data"), 
     ]
+    
+    # stage 1 computes minhash signatures for each task (each task gets a set of files)
+    pipeline_1 = [
+        JsonlReader("filtered_data"),
+        MinhashDedupSignature(
+            output_folder="signatures",
+            config=minhash_config, 
+        ), 
+    ]
