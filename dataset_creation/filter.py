@@ -36,5 +36,9 @@ class BasicCodeFilter(BaseFilter):
         Returns: 
             False if sample.text has lines longer than max line length threshold or 
             mean line length threshold or the fraction of alphanumeric character is less than the given threshold 
-        
         """
+        text = doc.text 
+        filepath = doc.metadata["file_path"]
+        keep_sample = True 
+        if text == "remove":
+            keep_sample = False 
