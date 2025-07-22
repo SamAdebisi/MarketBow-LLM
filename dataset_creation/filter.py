@@ -42,3 +42,12 @@ class BasicCodeFilter(BaseFilter):
         keep_sample = True 
         if text == "remove":
             keep_sample = False 
+        elif "ipynb" not in filepath:
+            max_line_length, mean_line_length, alphanum_ratio = get_basic_stats(text)
+            if (
+                max_line_length > self.max_line_length_threshold or 
+                mean_line_length > self.mean_line_length_threshold or 
+                alphanum_ratio < self.alphanum_threshold 
+            ):
+                keep_sample = False 
+        return keep_sample 
