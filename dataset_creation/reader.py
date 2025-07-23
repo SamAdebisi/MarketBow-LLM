@@ -33,3 +33,7 @@ OTHERS = [
     "opus",
 ]
 ANTI_FOMATS = tuple(IMAGE + VIDEO + DOC + AUDIO + ARCHIVE + OTHERS)
+
+
+def segment_blocks(content):
+    cells = []
