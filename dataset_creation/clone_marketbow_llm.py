@@ -48,3 +48,14 @@ def mirror_repositories():
     repositories = get_repos(ORG, os.environ["GH_ACCESS_TOKEN"])
     sorted_repos = sort_repos_by_stars(repositories)
     selected_repos = [x[0] for x in sorted_repos[:TOK_K]]
+    
+    print(f"Total repositories found: {len(selected_repos)}.")
+    print(selected_repos)
+    # Mirror repositories using multiprocessing 
+    print("Cloning repositories.")
+    with Pool() as pool:
+        pool.map(mirror_repository, selected_repos)
+        
+        
+if __name__ == "__main__":
+    mirror_repositories() 
