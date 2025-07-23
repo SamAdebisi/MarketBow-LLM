@@ -22,3 +22,7 @@ def get_repos(username, access_token=None, include_fork=False):
                 results.append((repo.name, repo.stargazers_count))
     print(results)
     return results 
+
+
+def sort_repos_by_stars(repos):
+    return sorted(repos, key=lambda x: x[1], reverse=True)
