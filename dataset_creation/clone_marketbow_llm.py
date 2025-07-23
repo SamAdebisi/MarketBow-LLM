@@ -35,3 +35,7 @@ def mirror_repository(repository):
     
     # Clone the repository 
     subprocess.run(["git", "clone", repository_url, repository_path])
+    
+    
+def mirror_repositories():
+    pass 
