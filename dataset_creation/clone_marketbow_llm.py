@@ -38,4 +38,8 @@ def mirror_repository(repository):
     
     
 def mirror_repositories():
-    pass 
+    # Create the mirror directory if it doesn't exist 
+    if not os.path.exists(MIRROR_DIRECTORY): 
+        os.makedirs(MIRROR_DIRECTORY)
+        
+    # Get the list of repositories in the organization  
