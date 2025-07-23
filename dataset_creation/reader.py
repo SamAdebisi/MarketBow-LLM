@@ -32,3 +32,4 @@ OTHERS = [
     "pcm",
     "opus",
 ]
+ANTI_FOMATS = tuple(IMAGE + VIDEO + DOC + AUDIO + ARCHIVE + OTHERS)
