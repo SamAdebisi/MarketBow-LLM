@@ -24,3 +24,10 @@ def create_hf_dataset():
             df = pd.DataFrame(data)
         else:
             df = pd.concat([df, pd.DataFrame(data)])
+            
+    dataset = Dataset.from_pandas(df)
+    dataset.push_to_hub(HF_DATASET_NAME, private=False)
+    
+    
+if __name__ == "__main__":
+    create_hf_dataset()
