@@ -43,3 +43,8 @@ def mirror_repositories():
         os.makedirs(MIRROR_DIRECTORY)
         
     # Get the list of repositories in the organization  
+    if not os.environ["GH_ACCESS_TOKEN"]: 
+        raise ValueError("You must set `GH_ACCESS_TOKEN` as an env variable.")
+    repositories = get_repos(ORG, os.environ["GH_ACCESS_TOKEN"])
+    sorted_repos = sort_repos_by_stars(repositories)
+    selected_repos = [x[0] for x in sorted_repos[:TOK_K]]
