@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from github import Github 
 
 ORG = "huggingface" 
-MIRROR_DIRECTORY = "marketbow_llm" 
+MIRROR_DIRECTORY = "hf_public_repos" 
 TOK_K = 15 
 
 
