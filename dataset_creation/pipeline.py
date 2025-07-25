@@ -13,7 +13,7 @@ from datatrove.pipeline.writers.jsonl import JsonlWriter
 from reader import PersonalCopilotDatasetReader 
 from filter import BasicodeFilter 
 
-MIRROR_DIRECTORY = "MarketBow-LLM" 
+MIRROR_DIRECTORY = "hf_public_repos" 
 TOTAL_TASKS = 16 
 
 # you can also change ngrams or the number of buckets and their size here 
