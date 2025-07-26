@@ -35,5 +35,16 @@ class ChatmlSpecialTokens(str, Enum):
     system = "<|im_start|>system"
     eos_token = "<|im_end|>"
     bos_token = "<s>"
-    pad_token = "<pad>"
-
+    pad_token = "<pad>" 
+    
+    @classmethod 
+    def list(cls):
+        return [c.value for c in cls]
+    
+    
+def create_datasets(tokenizer, data_args, training_args, apply_chat_template=False):
+    def preprocess(samples):
+        batch = []
+        for conversation in samples["messages"]:
+            batch.append(tokenizer.apply_chat_template(conversation, tokenize=False))
+        return {"content": batch}
