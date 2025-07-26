@@ -28,3 +28,30 @@ from transformers import (
 import fim 
 
 os.environ["WANDB_PROJET"] = "MarketBow-LLM" 
+
+
+# Define and parse arguments. 
+@dataclass 
+class ModelArguments:
+    """
+    Arguments pertaining to which model/config/tokenizer we are going to fine-tune from. 
+    """
+    
+    model_name_or_path: str = field(
+        metadata={
+            "help": "Path to pretrained model or model identifier from huggingface.co/models"
+        }
+    )
+    tokenizer_model_name_or_path: str = field(
+        metadata={
+            "help": "Path to pretrained model or model identifier from huggingface.co/models"
+        }
+    )
+    use_flash_attn: Optional[bool] = field(
+        default=False, 
+        metadata={"help": "Enables Flash attention for training."}, 
+    )
+    use_reentrant: Optional[bool] = field(
+        default=False, 
+        metadata={"help": "Gradient Checkpointing param. Refer the related docs"}, 
+    )
