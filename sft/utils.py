@@ -66,3 +66,14 @@ def create_datasets(tokenizer, data_args, training_args, apply_chat_template=Fal
             raise ValueError(
                 f"Split type {split} not recognized as one of test or train."
             )
+            
+    if apply_chat_template:
+        raw_datasets = raw_datasets.map(
+            preprocess,
+            batched=True, 
+            remove_columns=raw_datasets["train"].column_names, 
+        )
+        
+    train_data = raw_datasets["train"]
+    valid_data = raw_datasets["test"]
+    
