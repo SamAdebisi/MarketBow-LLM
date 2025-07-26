@@ -55,3 +55,22 @@ class ModelArguments:
         default=False, 
         metadata={"help": "Gradient Checkpointing param. Refer the related docs"}, 
     )
+    
+    
+@dataclass
+class DataTrainingArguments:
+    dataset_name: Optional[str] = field(
+        default="smangrul/hug_stack",
+        metadata={"help": "The preference dataset to use."},
+    )
+    dataset_text_field: str = field(
+        default="text", metadata={"help": "Dataset field to use as input text."}
+    )
+    max_seq_length: Optional[int] = field(default=4096)
+    test_size: Optional[float] = field(default=0.1)
+    fim_rate: Optional[float] = field(default=0.5)
+    fim_spm_rate: Optional[float] = field(default=0.5)
+    splits: Optional[str] = field(
+        default="train",
+        metadata={"help": "Comma separate list of the splits to use from the dataset."},
+    )
