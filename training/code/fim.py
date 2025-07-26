@@ -42,3 +42,25 @@ def permute(
         prefix = np.array(sample[: boundaries[0]], dtype=np.int64)
         middle = np.array(sample[boundaries[0] : boundaries[1]], dtype=np.int64)
         suffix = np.array(sample[boundaries[1] :], dtype=np.int64)
+        
+        if truncate_or_pad:
+            new_length = suffix.shape[0] + prefix.shape[0] + middle.shape[0] + 3 
+            diff = new_length - len(sample) 
+            if diff > 0:
+                if suffix.shape[0] <= diff: 
+                    return sample, np_rng 
+                suffix = suffix[: suffix.shape[0] - diff]
+            elif diff < 0:
+                suffix = np.concatenate([suffix, np.full((-1 * diff), pad_tok_id)])
+                
+        if np_rng.binomial(1, fim_spm_rate):
+            # SPM (variant 2 from FIM paper)
+            new_sample = np.concatenate(
+                [
+                    [prefix_tok_id, suffix_tok_id],
+                    suffix, 
+                    [middle_tok_id], 
+                    prefix, 
+                    middle, 
+                ]
+            )
