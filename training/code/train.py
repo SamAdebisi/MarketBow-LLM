@@ -226,4 +226,42 @@ def create_datasets(tokenizer, args, seed):
     return train_dataset, valid_dataset
 
 
-
+def main(model_args, data_args, training_args):
+    # Set seed for reproducibility 
+    set_seed(training_args.seed)
+    
+    # load the tokenizer 
+    tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_model_name_or_path)
+    
+    # load the datasets 
+    train_dataset, eval_dataset = create_datasets(
+        tokenizer, data_args, training_args.seed 
+    )
+    train_dataset.start_iteration = 0 
+    
+    # create a model initialized with random weights 
+    config = AutoConfig.from_pretrained(model_args.model_name_or_path)
+    model = AutoModelForCausalLM.from_config(
+        config, 
+        attn_implementation="flash_attention_2"
+        if model_args.use_flash_attn 
+        else "eager", 
+    )
+    # resize embedding layers 
+    model.resize_token_embeddings(len(tokenizer), pad_to_multiple_of=8)
+    
+    # gradient ckpt 
+    model.config.use_cache = training_args.gradient_checkpointing 
+    if training_args.gradient_checkpointing: 
+        training_args.gradient_checkpointing_kwargs = {
+            "use_reentrant": model_args.use_reentrant 
+        }
+        
+    # trainer 
+    trainer = Trainer(
+        model=model, 
+        args=training_args, 
+        train_dataset=train_dataset, 
+        eval_dataset=eval_dataset, 
+    )
+    trainer.accelerator.print(f"{trainer.model}")
