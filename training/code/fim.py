@@ -64,3 +64,19 @@ def permute(
                     middle, 
                 ]
             )
+        else: 
+            # PSM 
+            new_sample = np.concatenate(
+                [
+                    [prefix_tok_id, suffix_tok_id], 
+                    suffix, 
+                    [middle_tok_id], 
+                    prefix, 
+                    middle, 
+                ]
+            )
+    else: 
+        # don't do FIM preproc 
+        new_sample = sample 
+        
+    return list(new_sample), np_rng 
