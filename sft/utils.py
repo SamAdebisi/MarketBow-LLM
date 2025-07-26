@@ -23,3 +23,17 @@ class ZephyrSpecialTokens(str, Enum):
     eos_token = "</s>"
     bos_token = "<s>"
     pad_token = "<pad>"
+    
+    @classmethod 
+    def list(cls):
+        return [c.value for c in cls] 
+    
+    
+class ChatmlSpecialTokens(str, Enum): 
+    user = "<|im_start|>user"
+    assistant = "<|im_start|>assistant"
+    system = "<|im_start|>system"
+    eos_token = "<|im_end|>"
+    bos_token = "<s>"
+    pad_token = "<pad>"
+
