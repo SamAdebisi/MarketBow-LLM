@@ -48,3 +48,21 @@ def create_datasets(tokenizer, data_args, training_args, apply_chat_template=Fal
         for conversation in samples["messages"]:
             batch.append(tokenizer.apply_chat_template(conversation, tokenize=False))
         return {"content": batch}
+    
+    raw_datasets = DatasetDict()
+    for split in data_args.splits.split(","):
+        try: 
+            # Try first if dataset on a Hub repo 
+            dataset = load_dataset(data_args.dataset_name, split=split)
+        except DatasetGenerationError:
+            # If not, check local dataset 
+            dataset = load_from_disk(os.path.join(data_args.dataset_name, split))
+            
+        if "train" in split:
+            raw_datasets["train"] = dataset 
+        elif "test" in split:
+            raw_datasets["test"] = dataset 
+        else: 
+            raise ValueError(
+                f"Split type {split} not recognized as one of test or train."
+            )
