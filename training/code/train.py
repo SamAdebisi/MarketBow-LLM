@@ -265,3 +265,29 @@ def main(model_args, data_args, training_args):
         eval_dataset=eval_dataset, 
     )
     trainer.accelerator.print(f"{trainer.model}")
+    
+    # train 
+    checkpoint = None 
+    if training_args.resume_from_checkpoint is not None:
+        checkpoint = training_args.resume_from_checkpoint 
+    trainer.train(resume_from_checkpoint=checkpoint)
+    
+    # saving final model 
+    if trainer.is_fsdp_enabled: 
+        trainer.accelerator.state.fsdp_plugin.set_state_dict_type("FULL_STATE_DICT")
+    trainer.save_model()
+    
+    
+if __name__ == "__main__":
+    parser = HfArgumentParser(
+        (ModelArguments, DataTrainingArguments, TrainingArguments)
+    )
+    if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+        # if we pass only one argument to the script and it's the path to a json file, 
+        # let's parse it to get our arguments. 
+        model_args, data_args, training_args = parser.parse_json_file(
+            json_file=os.path.abspath(sys.argv[1])
+        )
+    else:
+        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+    main(model_args, data_args, training_args)
