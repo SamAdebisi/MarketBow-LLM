@@ -189,3 +189,41 @@ class ConstantLengthDataset(IterableDataset):
                 }
 
 
+def create_datasets(tokenizer, args, seed):
+    dataset = load_dataset(args.dataset_name, split=args.splits)
+    dataset = dataset.train_test_split(
+        test_size=args.test_size, seed=seed, shuffle=True
+    )
+    train_data = dataset["train"]
+    valid_data = dataset["test"]
+    print(
+        f"Size of the train set: {len(train_data)}. Size of the validation set: {len(valid_data)}"
+    )
+    chars_per_token = chars_token_ratio(train_data, tokenizer, args.dataset_text_field)
+    print(f"The character to token ratio of the dataset is: {chars_per_token:.2f}")
+    train_dataset = ConstantLengthDataset(
+        tokenizer,
+        train_data,
+        infinite=True,
+        seq_length=args.max_seq_length,
+        chars_per_token=chars_per_token,
+        content_field=args.dataset_text_field,
+        fim_rate=args.fim_rate,
+        fim_spm_rate=args.fim_spm_rate,
+        seed=seed,
+    )
+    valid_dataset = ConstantLengthDataset(
+        tokenizer,
+        valid_data,
+        infinite=False,
+        seq_length=args.max_seq_length,
+        chars_per_token=chars_per_token,
+        content_field=args.dataset_text_field,
+        fim_rate=args.fim_rate,
+        fim_spm_rate=args.fim_spm_rate,
+        seed=seed,
+    )
+    return train_dataset, valid_dataset
+
+
+
