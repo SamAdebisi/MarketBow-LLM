@@ -76,4 +76,94 @@ def create_datasets(tokenizer, data_args, training_args, apply_chat_template=Fal
         
     train_data = raw_datasets["train"]
     valid_data = raw_datasets["test"]
-    
+    print(
+        f"Size of the train set: {len(train_data)}. Size of the validation set: {len(valid_data)}"
+    )
+    print(f"A sample of train dataset: {train_data[0]}")
+
+    return train_data, valid_data
+
+
+def create_and_prepare_model(args):
+    device_map = None
+    bnb_config = None
+    load_in_8bit = args.use_8bit_qunatization
+
+    if args.use_4bit_qunatization:
+        compute_dtype = getattr(torch, args.bnb_4bit_compute_dtype)
+
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=args.use_4bit_qunatization,
+            bnb_4bit_quant_type=args.bnb_4bit_quant_type,
+            bnb_4bit_compute_dtype=compute_dtype,
+            bnb_4bit_use_double_quant=args.use_nested_quant,
+        )
+
+        if compute_dtype == torch.float16 and args.use_4bit_qunatization:
+            major, _ = torch.cuda.get_device_capability()
+            if major >= 8:
+                print("=" * 80)
+                print(
+                    "Your GPU supports bfloat16, you can accelerate training with the argument --bf16"
+                )
+                print("=" * 80)
+
+    if args.use_4bit_qunatization or args.use_8bit_qunatization:
+        device_map = (
+            int(os.environ.get("LOCAL_RANK", -1))
+            if torch.distributed.is_available() and torch.distributed.is_initialized()
+            else "auto"
+        )  # {"": 0}
+
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model_name_or_path,
+        load_in_8bit=load_in_8bit,
+        quantization_config=bnb_config,
+        device_map=device_map,
+        trust_remote_code=True,
+        attn_implementation="flash_attention_2" if args.use_flash_attn else "eager",
+    )
+
+    peft_config = None
+    chat_template = None
+    if args.use_peft_lora:
+        peft_config = LoraConfig(
+            lora_alpha=args.lora_alpha,
+            lora_dropout=args.lora_dropout,
+            r=args.lora_r,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=args.lora_target_modules.split(",")
+            if args.lora_target_modules != "all-linear"
+            else args.lora_target_modules,
+        )
+
+    special_tokens = None
+    chat_template = None
+    if args.chat_template_format == "chatml":
+        special_tokens = ChatmlSpecialTokens
+        chat_template = DEFAULT_CHATML_CHAT_TEMPLATE
+    elif args.chat_template_format == "zephyr":
+        special_tokens = ZephyrSpecialTokens
+        chat_template = DEFAULT_ZEPHYR_CHAT_TEMPLATE
+
+    if special_tokens is not None:
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.model_name_or_path,
+            pad_token=special_tokens.pad_token.value,
+            bos_token=special_tokens.bos_token.value,
+            eos_token=special_tokens.eos_token.value,
+            additional_special_tokens=special_tokens.list(),
+            trust_remote_code=True,
+        )
+        tokenizer.chat_template = chat_template
+        # make embedding resizing configurable?
+        model.resize_token_embeddings(len(tokenizer), pad_to_multiple_of=8)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.model_name_or_path, trust_remote_code=True
+        )
+        tokenizer.pad_token = tokenizer.eos_token
+
+    return model, peft_config, tokenizer
+
