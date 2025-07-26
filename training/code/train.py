@@ -74,3 +74,15 @@ class DataTrainingArguments:
         default="train",
         metadata={"help": "Comma separate list of the splits to use from the dataset."},
     )
+
+
+def chars_token_ratio(dataset, tokenizer, data_column, nb_examples=400):
+    """
+    Estimate the average number of characters per token in the dataset.
+    """
+    total_characters, total_tokens = 0, 0
+    for _, example in tqdm(zip(range(nb_examples), iter(dataset)), total=nb_examples):
+        total_characters += len(example[data_column])
+        total_tokens += len(tokenizer(example[data_column]).tokens())
+
+    return total_characters / total_tokens
