@@ -1,0 +1,14 @@
+accelerate
+bitsandbytes
+datasets
+datatrove
+huggingface-hub
+numpy
+pandas
+peft
+PyGithub
+torch
+tqdm
+transformers
+trl
+
