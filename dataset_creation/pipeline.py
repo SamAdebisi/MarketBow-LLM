@@ -11,7 +11,7 @@ from datatrove.pipeline.tokens import TokensCounter
 from datatrove.pipeline.readers import JsonlReader 
 from datatrove.pipeline.writers.jsonl import JsonlWriter 
 from reader import PersonalCopilotDatasetReader 
-from filter import BasicodeFilter 
+from filter import BasicCodeFilter 
 
 MIRROR_DIRECTORY = "hf_public_repos" 
 TOTAL_TASKS = 16 
@@ -26,7 +26,7 @@ def run_code_dataset_generation():
     # stage 0 reads the code data and does basic filtering 
     pipeline_0 = [
         PersonalCopilotDatasetReader(data_folder=MIRROR_DIRECTORY),
-        BasicodeFilter(),
+        BasicCodeFilter(),
         JsonlWriter(output_folder="filtered_data"), 
     ]
     
