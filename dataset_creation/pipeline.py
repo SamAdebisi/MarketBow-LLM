@@ -16,10 +16,9 @@ from filter import BasicCodeFilter
 MIRROR_DIRECTORY = "hf_public_repos" 
 TOTAL_TASKS = 16 
 
-# you can also change ngrams or the number of buckets and their size here 
-minhash_config = MinhashConfig(
-    use_64bit_hashes=True, 
-) # better precision -> fewer false positives (collisions) 
+# you can also change ngrams or the number of buckets and their size here
+# Note: recent datatrove versions do not accept `use_64bit_hashes`; defaults are used.
+minhash_config = MinhashConfig()
 
 
 def run_code_dataset_generation():
